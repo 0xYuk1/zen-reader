@@ -112,8 +112,11 @@ function highlightBreaks(text) {
         .replace(/</g, '&lt;')
         .replace(/>/g, '&gt;');
 
+    // Convert newlines to <br> (merged short chunks use \n as separator)
     // Highlight sentence-ending punctuation with marker class
-    return escaped.replace(/([.?!。？！])/g, '<span class="marker">$1</span>');
+    return escaped
+        .replace(/\n/g, '<br>')
+        .replace(/([.?!。？！])/g, '<span class="marker">$1</span>');
 }
 
 // --- View switching ---

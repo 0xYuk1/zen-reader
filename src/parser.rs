@@ -60,9 +60,30 @@ pub fn parse_epub(data: &[u8]) -> Result<BookChunks, String> {
     })
 }
 
+/// Clean XHTML for html5ever: strip XML declaration, namespace attributes,
+/// and self-closing script tags that confuse the HTML5 parser.
+fn clean_xhtml(html: &str) -> String {
+    let mut s = html.to_string();
+    // Remove <?xml ...?> declaration
+    if let Some(end) = s.find("?>") {
+        if s.trim_start().starts_with("<?xml") {
+            s = s[end + 2..].to_string();
+        }
+    }
+    // Remove ALL xmlns and xml: attributes (html5ever doesn't understand them)
+    let re_xmlns = regex::Regex::new(r#"\s+(xmlns(:[a-z]+)?|xml:lang)="[^"]*""#).unwrap();
+    s = re_xmlns.replace_all(&s, "").to_string();
+    // Remove self-closing script tags — invalid in HTML5, causes parser to
+    // treat everything after as inside <script>, eating all content
+    let re_script = regex::Regex::new(r#"<script[^>]*/>"#).unwrap();
+    s = re_script.replace_all(&s, "").to_string();
+    s
+}
+
 /// Extract paragraph text from HTML content.
 fn extract_paragraphs(html: &str) -> Vec<String> {
-    let document = Html::parse_document(html);
+    let cleaned = clean_xhtml(html);
+    let document = Html::parse_document(&cleaned);
 
     // Try block-level elements that typically contain paragraph text
     let selectors = ["p", "blockquote", "li", "h1", "h2", "h3", "h4", "h5", "h6"];

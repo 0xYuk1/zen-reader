@@ -2392,6 +2392,7 @@ dependencies = [
  "chrono",
  "dirs",
  "epub",
+ "regex",
  "reqwest",
  "scraper",
  "serde",

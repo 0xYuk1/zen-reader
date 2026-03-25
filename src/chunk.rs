@@ -89,10 +89,14 @@ fn split_sentences(text: &str) -> Vec<String> {
         .collect()
 }
 
+/// Minimum character length for a chunk to stand on its own.
+/// Shorter chunks get merged with the next one.
+const MIN_CHUNK_CHARS: usize = 80;
+
 /// Take a list of paragraphs for a chapter and produce chunks.
 pub fn chunk_paragraphs(paragraphs: &[String], chapter_title: &str, start_index: usize) -> Vec<Chunk> {
-    let mut chunks = Vec::new();
-    let mut index = start_index;
+    // Step 1: produce raw chunks from paragraphs
+    let mut raw: Vec<String> = Vec::new();
 
     for para in paragraphs {
         let trimmed = para.trim();
@@ -103,27 +107,57 @@ pub fn chunk_paragraphs(paragraphs: &[String], chapter_title: &str, start_index:
         let sentences = split_sentences(trimmed);
 
         if sentences.len() <= MAX_SENTENCES_PER_CHUNK {
-            // Whole paragraph is one chunk
-            chunks.push(Chunk {
-                index,
-                text: sentences.join(" "),
-                chapter: chapter_title.to_string(),
-            });
-            index += 1;
+            raw.push(sentences.join(" "));
         } else {
-            // Split into groups of ~TARGET sentences
             for group in sentences.chunks(TARGET_SENTENCES_PER_CHUNK) {
                 let text = group.join(" ");
                 if !text.is_empty() {
-                    chunks.push(Chunk {
-                        index,
-                        text,
-                        chapter: chapter_title.to_string(),
-                    });
-                    index += 1;
+                    raw.push(text);
                 }
             }
         }
+    }
+
+    // Step 2: merge consecutive short chunks together
+    let mut merged: Vec<String> = Vec::new();
+    let mut buffer = String::new();
+
+    for text in &raw {
+        if buffer.is_empty() {
+            buffer = text.clone();
+        } else {
+            buffer.push('\n');
+            buffer.push_str(text);
+        }
+
+        // Flush buffer if it's long enough and the next item isn't too short
+        if buffer.len() >= MIN_CHUNK_CHARS {
+            merged.push(buffer.clone());
+            buffer.clear();
+        }
+    }
+    // Flush remaining buffer
+    if !buffer.is_empty() {
+        // If there's a previous chunk and the leftover is tiny, append to it
+        if buffer.len() < MIN_CHUNK_CHARS && !merged.is_empty() {
+            let last = merged.last_mut().unwrap();
+            last.push('\n');
+            last.push_str(&buffer);
+        } else {
+            merged.push(buffer);
+        }
+    }
+
+    // Step 3: assign indices
+    let mut chunks = Vec::new();
+    let mut index = start_index;
+    for text in merged {
+        chunks.push(Chunk {
+            index,
+            text,
+            chapter: chapter_title.to_string(),
+        });
+        index += 1;
     }
 
     chunks
