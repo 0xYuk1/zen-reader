@@ -1,0 +1,554 @@
+*, *::before, *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --bg: #1a1a1a;
+    --text: #e0ddd5;
+    --text-muted: #777;
+    --accent: #aaa;
+    --card-bg: #242424;
+    --border: #333;
+    --marker: #6ba3be;
+    --font-size: 18px;
+    --line-height: 1.8;
+    --max-width: 640px;
+    --padding: 24px;
+    --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans", "Noto Sans CJK SC", "Noto Sans CJK TC", sans-serif;
+}
+
+/* Themes */
+[data-theme="light"] {
+    --bg: #faf9f6;
+    --text: #2c2c2c;
+    --text-muted: #888;
+    --accent: #555;
+    --card-bg: #fff;
+    --border: #e8e8e8;
+    --marker: #4a90b8;
+}
+
+[data-theme="claude"] {
+    --bg: #F5F0E8;
+    --text: #3D3929;
+    --text-muted: #8C8472;
+    --accent: #6B5D4D;
+    --card-bg: #EDE7DB;
+    --border: #D9D0C1;
+    --marker: #7B9BAA;
+}
+
+[data-theme="sepia"] {
+    --bg: #F4ECD8;
+    --text: #5B4636;
+    --text-muted: #9C8B78;
+    --accent: #7D6B56;
+    --card-bg: #EBE2CE;
+    --border: #D4C9B5;
+    --marker: #7B9BAA;
+}
+
+html, body {
+    height: 100%;
+    font-family: var(--font-family);
+    background: var(--bg);
+    color: var(--text);
+    -webkit-font-smoothing: antialiased;
+    overflow: hidden;
+    transition: background 0.3s, color 0.3s;
+    overscroll-behavior: none;
+}
+
+.chunk-container::-webkit-scrollbar {
+    display: none;
+}
+.chunk-container {
+    scrollbar-width: none;
+}
+
+/* Views */
+.view {
+    display: none;
+    height: 100%;
+    flex-direction: column;
+}
+.view.active {
+    display: flex;
+}
+
+/* Library View */
+.library-header {
+    padding: var(--padding);
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+}
+.library-header h1 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 12px;
+}
+.library-controls {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+.library-controls select {
+    flex: 1;
+    padding: 8px 12px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--card-bg);
+    color: var(--text);
+    font-size: 0.9rem;
+}
+.upload-btn {
+    padding: 8px 16px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--card-bg);
+    color: var(--text);
+    font-size: 0.9rem;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+/* Series list */
+.series-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: var(--padding);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.series-item {
+    padding: 14px 16px;
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background 0.15s;
+}
+.series-item:active {
+    background: var(--border);
+}
+
+/* Books View */
+.books-header {
+    padding: var(--padding);
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.books-header h2 {
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+.back-btn {
+    background: none;
+    border: none;
+    color: var(--text);
+    font-size: 1.4rem;
+    cursor: pointer;
+    padding: 4px 8px;
+}
+.books-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: var(--padding);
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 16px;
+    align-content: start;
+}
+.book-card {
+    cursor: pointer;
+    text-align: center;
+}
+.book-card img {
+    width: 100%;
+    aspect-ratio: 2/3;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--card-bg);
+}
+.book-card .book-title {
+    margin-top: 8px;
+    font-size: 0.85rem;
+    line-height: 1.3;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+.book-card .book-author {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+/* Reading View */
+.chunk-container {
+    flex: 1;
+    display: flex;
+    align-items: safe center;
+    justify-content: center;
+    padding: 48px clamp(32px, 8vw, 80px) 64px;
+    overflow-y: auto;
+    cursor: default;
+}
+
+#chunk-text {
+    max-width: var(--max-width);
+    font-size: var(--font-size);
+    line-height: var(--line-height);
+    word-break: break-word;
+    text-align: left;
+}
+
+/* Sentence break markers */
+.marker {
+    color: var(--marker);
+    font-weight: 500;
+}
+
+/* Mode indicator (Z/F) */
+.mode-indicator {
+    position: fixed;
+    bottom: 14px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    color: var(--text-muted);
+    opacity: 0.5;
+    cursor: pointer;
+    padding: 6px 14px;
+    border-radius: 12px;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+    transition: opacity 0.2s;
+    z-index: 15;
+}
+.mode-indicator:hover {
+    opacity: 0.8;
+}
+
+/* Bookmark floating button */
+.bookmark-floating {
+    position: fixed;
+    top: 14px;
+    right: calc(var(--padding) + 52px);
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text-muted);
+    font-size: 0.65rem;
+    padding: 7px 10px;
+    cursor: pointer;
+    z-index: 15;
+    opacity: 0.6;
+    transition: opacity 0.2s;
+    -webkit-tap-highlight-color: transparent;
+}
+.bookmark-floating:hover,
+.bookmark-floating:active {
+    opacity: 1;
+}
+.bookmark-floating.bookmarked {
+    opacity: 1;
+}
+
+/* Edge strip (right side overview) */
+.edge-strip {
+    position: fixed;
+    top: 48px;
+    bottom: 48px;
+    right: 4px;
+    width: 14px;
+    z-index: 12;
+    pointer-events: auto;
+}
+
+.edge-position {
+    position: absolute;
+    right: 0;
+    width: 10px;
+    height: 3px;
+    background: var(--text-muted);
+    opacity: 0.5;
+    border-radius: 2px;
+    transition: top 0.2s;
+}
+
+.edge-chapters .edge-chapter-tick {
+    position: absolute;
+    right: 2px;
+    width: 6px;
+    height: 1px;
+    background: var(--text-muted);
+    opacity: 0.2;
+}
+
+.edge-bookmarks .edge-bookmark-tick {
+    position: absolute;
+    right: 0;
+    width: 12px;
+    height: 4px;
+    border-radius: 1px;
+    cursor: pointer;
+    opacity: 0.85;
+    transition: transform 0.15s;
+}
+.edge-bookmark-tick:hover {
+    transform: scaleX(1.5);
+    opacity: 1;
+}
+
+/* Color picker */
+.color-picker {
+    position: fixed;
+    top: 48px;
+    right: calc(var(--padding) + 52px);
+    display: flex;
+    gap: 8px;
+    padding: 10px 14px;
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+    z-index: 25;
+    transition: opacity 0.15s, transform 0.15s;
+}
+.color-picker.hidden {
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-6px);
+}
+.color-dot {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: transform 0.1s;
+}
+.color-dot:hover {
+    transform: scale(1.2);
+}
+.color-dot:active {
+    transform: scale(0.95);
+}
+
+/* Reading header */
+.reading-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    padding: 12px var(--padding);
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    z-index: 10;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    transition: opacity 0.2s;
+}
+
+/* Always-visible Aa settings button */
+.settings-floating {
+    position: fixed;
+    top: 14px;
+    right: var(--padding);
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 6px 12px;
+    cursor: pointer;
+    z-index: 15;
+    opacity: 0.6;
+    transition: opacity 0.2s;
+    -webkit-tap-highlight-color: transparent;
+}
+.settings-floating:hover,
+.settings-floating:active {
+    opacity: 1;
+}
+
+.reading-footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 8px var(--padding);
+    padding-bottom: max(8px, env(safe-area-inset-bottom));
+    background: var(--bg);
+    text-align: center;
+    z-index: 10;
+    transition: opacity 0.2s;
+}
+
+.reading-header.hidden,
+.reading-footer.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.progress-bar {
+    height: 3px;
+    background: var(--border);
+    border-radius: 2px;
+    margin-bottom: 6px;
+}
+.progress-fill {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 2px;
+    transition: width 0.2s;
+    width: 0%;
+}
+
+#progress-text {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+/* Settings Panel */
+.settings-panel {
+    position: fixed;
+    top: 44px;
+    right: var(--padding);
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    z-index: 20;
+    width: 280px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+    transition: opacity 0.2s, transform 0.2s;
+}
+.settings-panel.hidden {
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-8px);
+}
+
+.settings-section {
+    margin-bottom: 16px;
+}
+.settings-section:last-child {
+    margin-bottom: 0;
+}
+.settings-section label {
+    display: block;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 8px;
+}
+
+/* Theme swatches */
+.theme-swatches {
+    display: flex;
+    gap: 8px;
+}
+.swatch {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    border: 2px solid transparent;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: border-color 0.15s;
+}
+.swatch.active {
+    border-color: var(--marker);
+}
+
+/* Font size controls */
+.size-controls {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.size-controls button {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    padding: 6px 12px;
+    cursor: pointer;
+    font-size: 0.85rem;
+}
+#size-value {
+    font-size: 0.9rem;
+    min-width: 30px;
+    text-align: center;
+}
+
+/* Font select */
+#font-select {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 0.85rem;
+}
+.custom-font-input {
+    width: 100%;
+    margin-top: 8px;
+    padding: 8px 10px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 0.85rem;
+}
+.custom-font-input.hidden {
+    display: none;
+}
+
+/* Loading state */
+.loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+/* Mobile adjustments */
+@media (max-width: 480px) {
+    :root {
+        --padding: 16px;
+    }
+    .books-list {
+        grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+        gap: 12px;
+    }
+    .settings-panel {
+        right: 8px;
+        left: 8px;
+        width: auto;
+    }
+}

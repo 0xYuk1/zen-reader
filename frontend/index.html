@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Zen Reader</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Library View -->
+    <div id="library-view" class="view active">
+        <header class="library-header">
+            <h1>Zen Reader</h1>
+            <div class="library-controls">
+                <select id="library-select"></select>
+                <label class="upload-btn">
+                    Upload EPUB
+                    <input type="file" id="file-upload" accept=".epub" hidden>
+                </label>
+            </div>
+        </header>
+
+        <div id="series-list" class="series-list"></div>
+    </div>
+
+    <!-- Books View (books in a series) -->
+    <div id="books-view" class="view">
+        <header class="books-header">
+            <button id="back-to-library" class="back-btn">&larr;</button>
+            <h2 id="series-title"></h2>
+        </header>
+        <div id="books-list" class="books-list"></div>
+    </div>
+
+    <!-- Reading View -->
+    <div id="reading-view" class="view">
+        <div id="reading-header" class="reading-header hidden">
+            <button id="back-to-books" class="back-btn">&larr;</button>
+            <span id="chapter-name"></span>
+        </div>
+
+        <div id="chunk-container" class="chunk-container">
+            <p id="chunk-text"></p>
+        </div>
+
+        <button id="settings-toggle" class="settings-floating">Aa</button>
+        <button id="bookmark-btn" class="bookmark-floating" title="Add bookmark">&#9654;</button>
+        <div id="mode-indicator" class="mode-indicator">Z</div>
+
+        <!-- Edge strip: right-side overview with bookmark ticks -->
+        <div id="edge-strip" class="edge-strip">
+            <div id="edge-position" class="edge-position"></div>
+            <div id="edge-chapters" class="edge-chapters"></div>
+            <div id="edge-bookmarks" class="edge-bookmarks"></div>
+        </div>
+
+        <!-- Color picker overlay for bookmarks -->
+        <div id="color-picker" class="color-picker hidden">
+            <button class="color-dot" data-color="#E74C3C" style="background:#E74C3C;" title="Red"></button>
+            <button class="color-dot" data-color="#F39C12" style="background:#F39C12;" title="Orange"></button>
+            <button class="color-dot" data-color="#3498DB" style="background:#3498DB;" title="Blue"></button>
+            <button class="color-dot" data-color="#2ECC71" style="background:#2ECC71;" title="Green"></button>
+            <button class="color-dot" data-color="#9B59B6" style="background:#9B59B6;" title="Purple"></button>
+        </div>
+
+        <div id="reading-footer" class="reading-footer hidden">
+            <div id="progress-bar" class="progress-bar">
+                <div id="progress-fill" class="progress-fill"></div>
+            </div>
+            <span id="progress-text"></span>
+        </div>
+
+        <!-- Settings Panel -->
+        <div id="settings-panel" class="settings-panel hidden">
+            <div class="settings-content">
+                <div class="settings-section">
+                    <label>Theme</label>
+                    <div class="theme-swatches" id="theme-swatches">
+                        <button class="swatch" data-theme="dark" title="Dark" style="background:#1a1a1a;color:#e0ddd5;">A</button>
+                        <button class="swatch" data-theme="light" title="Light" style="background:#faf9f6;color:#2c2c2c;">A</button>
+                        <button class="swatch" data-theme="claude" title="Claude" style="background:#F5F0E8;color:#3D3929;">A</button>
+                        <button class="swatch" data-theme="sepia" title="Sepia" style="background:#F4ECD8;color:#5B4636;">A</button>
+                    </div>
+                </div>
+                <div class="settings-section">
+                    <label>Font Size</label>
+                    <div class="size-controls">
+                        <button id="size-down">A-</button>
+                        <span id="size-value">18</span>
+                        <button id="size-up">A+</button>
+                    </div>
+                </div>
+                <div class="settings-section">
+                    <label>Line Spacing</label>
+                    <div class="size-controls">
+                        <button id="lh-down">-</button>
+                        <span id="lh-value">1.8</span>
+                        <button id="lh-up">+</button>
+                    </div>
+                </div>
+                <div class="settings-section">
+                    <label>Font Family</label>
+                    <select id="font-select">
+                        <option value="system">System Default</option>
+                        <option value="serif">Serif (Georgia)</option>
+                        <option value="monaspice">MonaspiceRn Nerd Font</option>
+                        <option value="custom">Custom...</option>
+                    </select>
+                    <input type="text" id="custom-font" class="custom-font-input hidden" placeholder="Enter font name...">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
